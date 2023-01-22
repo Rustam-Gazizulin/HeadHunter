@@ -11,7 +11,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import DetailView, ListView, CreateView, UpdateView, DeleteView
 
 from HeadHunter import settings
-from HeadHunter.serializers import VacancySerializer
+from HeadHunter.serializers import VacancySerializer, VacancyDetailSerializer
 from vacancies.models import Vacancy, Skill
 
 
@@ -52,15 +52,7 @@ class VacancyDetailView(DetailView):
     def get(self, request, *args, **kwargs):
         vacancy = self.get_object()
 
-        return JsonResponse({
-                'id': vacancy.id,
-                'text': vacancy.text,
-                'status': vacancy.status,
-                'slug': vacancy.slug,
-                'created': vacancy.created,
-                'user': vacancy.user_id,
-                'skills': list(vacancy.skills.all().values_list('name', flat=True)),
-        })
+        return JsonResponse(VacancyDetailSerializer(vacancy).data)
 
 
 @method_decorator(csrf_exempt, name='dispatch')
