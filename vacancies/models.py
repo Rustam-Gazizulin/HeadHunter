@@ -34,3 +34,7 @@ class Vacancy(models.Model):
 
     def __str__(self):
         return self.text
+
+    @property
+    def username(self):
+        return self.user.username if self.user else None
