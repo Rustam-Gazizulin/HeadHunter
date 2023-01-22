@@ -3,7 +3,7 @@ import json
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator
 from django.db.models import Count, Avg
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import get_object_or_404
 from django.http import HttpResponse, JsonResponse
 from django.utils.decorators import method_decorator
 from django.views import View
@@ -11,6 +11,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import DetailView, ListView, CreateView, UpdateView, DeleteView
 
 from HeadHunter import settings
+from HeadHunter.serializers import VacancySerializer
 from vacancies.models import Vacancy, Skill
 
 
@@ -34,15 +35,10 @@ class VacancyListView(ListView):
         page_number = request.GET.get("page")
         page_obj = paginator.get_page(page_number)
 
-        vacancies = []
-        for vacancy in page_obj:
-            vacancies.append({
-                'id': vacancy.id,
-                'text': vacancy.text,
-                'skills': list(map(str, vacancy.skills.all())),
-            })
+        list(map(lambda x: setattr(x, 'username', x.user.username if x.user else None), page_obj))
+
         response = {
-            "items": vacancies,
+            "items": VacancySerializer(page_obj, many=True).data,
             "num_pages": paginator.num_pages,
             "total": paginator.count
         }
