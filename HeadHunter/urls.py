@@ -16,6 +16,7 @@ urlpatterns = [
     path('hello/', views.hello),
     path('vacancy/', include('vacancies.urls')),
     path('company/', include('companies.urls')),
+    path('user/', include('authentication.urls')),
 ]
 
 
